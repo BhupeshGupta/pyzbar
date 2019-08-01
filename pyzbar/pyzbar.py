@@ -13,13 +13,13 @@ from .wrapper import (
     zbar_symbol_get_loc_size, zbar_symbol_get_loc_x, zbar_symbol_get_loc_y,
     zbar_symbol_next, ZBarConfig, ZBarSymbol, EXTERNAL_DEPENDENCIES
 )
-
+å
 __all__ = [
     'decode', 'Point', 'Rect', 'Decoded', 'ZBarSymbol', 'EXTERNAL_DEPENDENCIES'
 ]
 
 
-Decoded = namedtuple('Decoded', ['data', 'type', 'rect', 'polygon'])
+Decoded = namedtuple('Decoded', ['data', 'type', 'rect', 'polygon', 'points'])
 
 # ZBar's magic 'fourcc' numbers that represent image formats
 _FOURCC = {
@@ -100,19 +100,18 @@ def _decode_symbols(symbols):
         data = string_at(zbar_symbol_get_data(symbol))
         # The 'type' int in a value in the ZBarSymbol enumeration
         symbol_type = ZBarSymbol(symbol.contents.type).name
-        polygon = convex_hull(
-            (
-                zbar_symbol_get_loc_x(symbol, index),
-                zbar_symbol_get_loc_y(symbol, index)
-            )
-            for index in _RANGEFN(zbar_symbol_get_loc_size(symbol))
-        )
+        points = [(
+            zbar_symbol_get_loc_x(symbol, index), zbar_symbol_get_loc_y(symbol, index)
+        ) for index in _RANGEFN(zbar_symbol_get_loc_size(symbol))]
+
+        polygon = convex_hull(points)
 
         yield Decoded(
             data=data,
             type=symbol_type,
             rect=bounding_box(polygon),
-            polygon=polygon
+            polygon=polygon,
+            points=[Point(x=point[0], y=point[1]) for point in points]
         )
 
 
