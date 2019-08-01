@@ -13,7 +13,7 @@ from .wrapper import (
     zbar_symbol_get_loc_size, zbar_symbol_get_loc_x, zbar_symbol_get_loc_y,
     zbar_symbol_next, ZBarConfig, ZBarSymbol, EXTERNAL_DEPENDENCIES
 )
-å
+
 __all__ = [
     'decode', 'Point', 'Rect', 'Decoded', 'ZBarSymbol', 'EXTERNAL_DEPENDENCIES'
 ]
